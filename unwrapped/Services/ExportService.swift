@@ -1,4 +1,5 @@
 import Foundation
+import Compression
 import SwiftUI
 
 enum ExportService {
@@ -30,5 +31,17 @@ enum ExportService {
         for url in items where url.lastPathComponent.hasPrefix("Exports-") {
             try? fm.removeItem(at: url)
         }
+    }
+
+    static func zipExports(_ files: [URL]) throws -> URL {
+        let dir = try PersistenceService.projectDirectory()
+        let zipURL = dir.appendingPathComponent("YearInReview-Exports-\(UUID().uuidString).zip")
+        guard let archive = Archive(url: zipURL, accessMode: .create) else {
+            throw NSError(domain: "ExportService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create archive"])
+        }
+        for file in files {
+            try archive.addEntry(with: file.lastPathComponent, relativeTo: file.deletingLastPathComponent())
+        }
+        return zipURL
     }
 }

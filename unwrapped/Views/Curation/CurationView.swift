@@ -8,20 +8,22 @@ struct CurationView: View {
     @State private var isExporting = false
     @State private var showShare = false
     @State private var showShareSheet = false
+    @State private var zipURL: URL? = nil
 
     var body: some View {
         NavigationView {
             List {
                 Section("Cards") {
-                    ForEach(Array(viewModel.project.cards.enumerated()), id: \.element.id) { index, card in
+                    ForEach($viewModel.project.cards) { $card in
                         HStack {
                             Text(card.type.rawValue.capitalized)
                             Spacer()
-                            Toggle("", isOn: Binding(
-                                get: { viewModel.project.cards[index].isEnabled },
-                                set: { viewModel.project.cards[index].isEnabled = $0 }
-                            )).labelsHidden()
+                            Toggle("", isOn: $card.isEnabled).labelsHidden()
                         }
+                    }
+                    .onMove { from, to in
+                        viewModel.project.cards.move(fromOffsets: from, toOffset: to)
+                        viewModel.save()
                     }
                 }
             }
@@ -57,12 +59,8 @@ struct CurationView: View {
                 ShareLink(items: viewModel.exportedURLs) {
                     Label("Share Exports", systemImage: "square.and.arrow.up")
                 }
-                if let dir = viewModel.exportedURLs.first?.deletingLastPathComponent() {
-                    Button {
-                        UIApplication.shared.open(dir)
-                    } label: {
-                        Label("Open in Files", systemImage: "folder")
-                    }
+                if let zipURL {
+                    ShareLink(item: zipURL) { Label("Share ZIP", systemImage: "archivebox") }
                 }
                 Button {
                     showShareSheet = true
@@ -78,7 +76,8 @@ struct CurationView: View {
         }
         .padding()
         .sheet(isPresented: $showShareSheet) {
-            ShareSheet(items: viewModel.exportedURLs)
+            let items: [Any] = zipURL != nil ? [zipURL!] : viewModel.exportedURLs
+            ShareSheet(items: items)
         }
     }
 
@@ -90,6 +89,7 @@ struct CurationView: View {
         do {
             let urls = try ExportService.exportCards(views)
             viewModel.exportedURLs = urls
+            zipURL = try? ExportService.zipExports(urls)
         } catch {
             print("Export error: \(error)")
         }

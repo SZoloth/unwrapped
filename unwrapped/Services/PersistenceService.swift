@@ -1,4 +1,6 @@
 import Foundation
+import UniformTypeIdentifiers
+import ImageIO
 
 enum PersistenceService {
     static func projectDirectory() throws -> URL {
@@ -46,9 +48,39 @@ enum PersistenceService {
     }
 
     static func saveImageData(_ data: Data, suggestedName: String? = nil) throws -> URL {
-        let name = suggestedName?.replacingOccurrences(of: " ", with: "_") ?? UUID().uuidString
-        let url = try mediaDirectory().appendingPathComponent(name).appendingPathExtension("jpg")
+        let name = (suggestedName ?? UUID().uuidString).replacingOccurrences(of: " ", with: "_")
+        let ext = detectImageExtension(from: data) ?? "jpg"
+        let url = try mediaDirectory().appendingPathComponent(name).appendingPathExtension(ext)
         try data.write(to: url, options: .atomic)
         return url
+    }
+
+    static func copyIntoMedia(from sourceURL: URL) throws -> URL {
+        let destDir = try mediaDirectory()
+        let destURL = destDir.appendingPathComponent(sourceURL.lastPathComponent)
+        let fm = FileManager.default
+        if fm.fileExists(atPath: destURL.path) {
+            let unique = UUID().uuidString
+            let ext = sourceURL.pathExtension
+            let base = sourceURL.deletingPathExtension().lastPathComponent
+            let alt = destDir.appendingPathComponent("\(base)-\(unique)").appendingPathExtension(ext)
+            try fm.copyItem(at: sourceURL, to: alt)
+            return alt
+        } else {
+            try fm.copyItem(at: sourceURL, to: destURL)
+            return destURL
+        }
+    }
+
+    private static func detectImageExtension(from data: Data) -> String? {
+        guard let src = CGImageSourceCreateWithData(data as CFData, nil),
+              let uti = CGImageSourceGetType(src) as String? else { return nil }
+        if let type = UTType(uti) {
+            if type.conforms(to: .jpeg) { return "jpg" }
+            if type.conforms(to: .png) { return "png" }
+            if type.conforms(to: .heic) { return "heic" }
+            if type.conforms(to: .tiff) { return "tiff" }
+        }
+        return nil
     }
 }

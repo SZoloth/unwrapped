@@ -35,8 +35,12 @@ struct ImportView: View {
         .fileImporter(isPresented: $showingImagePicker, allowedContentTypes: [.image], allowsMultipleSelection: true) { result in
             switch result {
             case .success(let urls):
-                pickedImageURLs = urls
-                let moments = PhotoImportService.moments(from: urls)
+                var copied: [URL] = []
+                for u in urls {
+                    if let c = try? PersistenceService.copyIntoMedia(from: u) { copied.append(c) }
+                }
+                pickedImageURLs = copied
+                let moments = PhotoImportService.moments(from: copied)
                 if let idx = viewModel.project.cards.firstIndex(where: { $0.type == .topMoments }) {
                     viewModel.project.cards[idx].moments.append(contentsOf: moments)
                 }
