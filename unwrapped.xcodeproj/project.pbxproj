@@ -425,7 +425,9 @@
 				DEVELOPMENT_TEAM = idk;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need photo access to import your memories for the Year in Review.";
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow saving exported cards to your Photos library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -454,7 +456,9 @@
 				DEVELOPMENT_TEAM = idk;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need photo access to import your memories for the Year in Review.";
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow saving exported cards to your Photos library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

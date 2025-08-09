@@ -3,7 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkManager: NetworkManager
+    @EnvironmentObject var projectVM: ProjectViewModel
     @State private var selectedTab = 0
+    @State private var showYearFlow = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -69,16 +71,22 @@ struct HomeView: View {
             .navigationTitle("unwrapped")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingWelcome.toggle()
-                    }) {
-                        Image(systemName: "info.circle")
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showYearFlow = true
+                    } label: {
+                        Label("Year in Review", systemImage: "sparkles")
                     }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingWelcome.toggle() }) { Image(systemName: "info.circle") }
                 }
             }
             .sheet(isPresented: $showingWelcome) {
                 WelcomeView()
+            }
+            .sheet(isPresented: $showYearFlow) {
+                YearFlowContainer(viewModel: projectVM)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())

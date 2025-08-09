@@ -5,12 +5,14 @@ struct unwrappedApp: App {
     // MARK: - App State Management
     @StateObject private var appState = AppState()
     @StateObject private var networkManager = NetworkManager()
-    
+    @StateObject private var projectViewModel = ProjectViewModel()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
                 .environmentObject(networkManager)
+                .environmentObject(projectViewModel)
                 .preferredColorScheme(appState.colorScheme)
                 .onAppear {
                     setupApp()
