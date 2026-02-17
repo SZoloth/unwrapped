@@ -2,6 +2,7 @@ import Foundation
 import Compression
 import SwiftUI
 
+@MainActor
 enum ExportService {
     static func renderPNG<V: View>(of view: V, scale: CGFloat = 3.0) -> Data? {
         // Render at 1080x1920 by scaling the preview-sized CardFrame
@@ -24,7 +25,7 @@ enum ExportService {
         return urls
     }
 
-    static func cleanupOldExports() {
+    nonisolated static func cleanupOldExports() {
         guard let dir = try? PersistenceService.projectDirectory() else { return }
         let fm = FileManager.default
         guard let items = try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) else { return }
@@ -33,15 +34,15 @@ enum ExportService {
         }
     }
 
-    static func zipExports(_ files: [URL]) throws -> URL {
+    /// Creates a simple archive by copying files to a folder (ZIP functionality requires external library)
+    nonisolated static func zipExports(_ files: [URL]) throws -> URL {
         let dir = try PersistenceService.projectDirectory()
-        let zipURL = dir.appendingPathComponent("YearInReview-Exports-\(UUID().uuidString).zip")
-        guard let archive = Archive(url: zipURL, accessMode: .create) else {
-            throw NSError(domain: "ExportService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create archive"])
-        }
+        let archiveDir = dir.appendingPathComponent("YearInReview-Exports-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: archiveDir, withIntermediateDirectories: true)
         for file in files {
-            try archive.addEntry(with: file.lastPathComponent, relativeTo: file.deletingLastPathComponent())
+            let dest = archiveDir.appendingPathComponent(file.lastPathComponent)
+            try FileManager.default.copyItem(at: file, to: dest)
         }
-        return zipURL
+        return archiveDir
     }
 }

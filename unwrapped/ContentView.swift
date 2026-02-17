@@ -51,8 +51,10 @@ struct ContentView: View {
 // MARK: - Home View
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var projectVM: ProjectViewModel
     @State private var showingWelcome = false
-    
+    @State private var showYearFlow = false
+
     var body: some View {
         NavigationView {
             ScrollView {

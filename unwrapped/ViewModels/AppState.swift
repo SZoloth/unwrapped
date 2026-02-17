@@ -34,7 +34,7 @@ class AppState: ObservableObject {
         colorSchemeSelection = UserDefaults.standard.integer(forKey: UserDefaultsKeys.colorSchemeSelection)
         
         // If it's truly the first launch, set the flag
-        if !UserDefaults.standard.object(forKey: UserDefaultsKeys.isFirstLaunch) {
+        if UserDefaults.standard.object(forKey: UserDefaultsKeys.isFirstLaunch) == nil {
             isFirstLaunch = true
             UserDefaults.standard.set(false, forKey: UserDefaultsKeys.isFirstLaunch)
         }

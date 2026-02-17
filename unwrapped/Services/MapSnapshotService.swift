@@ -25,8 +25,8 @@ enum MapSnapshotService {
         options.mapType = .standard
 
         let snapshotter = MKMapSnapshotter(options: options)
-        let image = try await snapshotter.start()
-        return image
+        let snapshot = try await snapshotter.start()
+        return snapshot.image
     }
 }
 

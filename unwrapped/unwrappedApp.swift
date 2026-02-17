@@ -1,18 +1,20 @@
 import SwiftUI
 
 @main
-struct unwrappedApp: App {
+struct AnniversaryOSApp: App {
     // MARK: - App State Management
     @StateObject private var appState = AppState()
     @StateObject private var networkManager = NetworkManager()
     @StateObject private var projectViewModel = ProjectViewModel()
+    @StateObject private var tenderViewModel = TenderViewModel()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
                 .environmentObject(appState)
                 .environmentObject(networkManager)
                 .environmentObject(projectViewModel)
+                .environmentObject(tenderViewModel)
                 .preferredColorScheme(appState.colorScheme)
                 .onAppear {
                     setupApp()
